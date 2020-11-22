@@ -122,6 +122,13 @@ html, body {
     background: #dde2e9;
     padding: 10rem;
 
+    @media (max-width: 1024px) {
+      padding: 10rem 5rem;
+    }
+    @media (max-width: 800px) {
+      padding: 5rem 2rem 7.5rem;
+    }
+
     .heading {
       font-weight: 500;
       font-size: 2.5rem;
@@ -180,15 +187,20 @@ html, body {
       row-gap: 2.5rem;
       height: auto;
       min-height: 80vh;
+    }
 
-      @media (max-width: 1024px) {
+    @media (max-width: 1024px) {
+      padding: 0 1vw 3rem;
+
+      .photo-grid {
         column-count: 2;
       }
-      @media (max-width: 800px) {
+    }
+    @media (max-width: 800px) {
+      .photo-grid {
         column-count: 1;
       }
     }
-
   }
 }
 </style>
