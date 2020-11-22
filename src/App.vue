@@ -1,7 +1,11 @@
 <template>
   <div id="app">
     <header>
-      <h1 class="heading" v-if="query && resultFetched">
+      <h1 class="heading" v-if="query && requesting">
+        Searching for
+        <q v-text="query" />
+      </h1>
+      <h1 class="heading" v-else-if="query && resultFetched">
         Search Results for
         <q v-text="query" />
       </h1>
@@ -28,21 +32,29 @@
     </header>
 
     <main>
-      <photo-loader v-if="requesting" />
-      <template v-else>
+      <photo-loader class="photo-grid" v-if="requesting" />
+      <div class="photo-grid" v-else>
         <photo
           v-for="photo in photos"
           :key="photo.id"
           :data="photo"
+          :showPhoto="openPreview"
         />
-      </template>
+      </div>
     </main>
+
+    <photo-modal
+      :open="previewOpen"
+      :data="previewData"
+      :close-modal="closePreview"
+    />
   </div>
 </template>
 
 <script>
 import Photo from './components/Photo.vue'
 import PhotoLoader from './components/PhotoLoader.vue'
+import PhotoModal from './components/PhotoModal.vue'
 
 import { searchPhotos } from './services/unsplash'
 
@@ -50,13 +62,16 @@ export default {
   name: 'App',
   components: {
     Photo,
-    PhotoLoader
+    PhotoLoader,
+    PhotoModal
   },
   data: () => ({
     photos: null,
     query: '',
     requesting: false,
-    resultFetched: false
+    resultFetched: false,
+    previewOpen: false,
+    previewData: {}
   }),
   methods: {
     searchPhotos,
@@ -73,6 +88,14 @@ export default {
       } finally {
         this.requesting = false
       }
+    },
+    openPreview (info) {
+      this.previewData = info
+      this.previewOpen = true
+    },
+    closePreview () {
+      this.previewData = {}
+      this.previewOpen = false
     }
   },
   created () {
@@ -146,41 +169,26 @@ html, body {
   }
 
   main {
-    margin: auto;
     padding: 0 2rem 4rem;
+    margin: auto;
     max-width: 80vw;
     margin-top: -5rem;
-    column-count:  3;
-    column-gap: 2.5rem;
-    row-gap: 2.5rem;
-    height: auto;
-    min-height: 80vh;
 
-    @media (max-width: 1024px) {
-      column-count: 2;
-    }
-    @media (max-width: 800px) {
-      column-count: 1;
-    }
+    .photo-grid {
+      column-count:  3;
+      column-gap: 2.5rem;
+      row-gap: 2.5rem;
+      height: auto;
+      min-height: 80vh;
 
-    .photo {
-      margin-bottom: 2.5rem;
-      overflow: hidden;
-      border-radius: 5px;
-      position: relative;
-
-      img {
-        width: 100%;
-        object-fit: cover;
-        border-radius: 5px;
-        filter: brightness(0.6);
-        transition: filter ease-in-out 0.3s;
+      @media (max-width: 1024px) {
+        column-count: 2;
       }
-
-      &:hover img {
-        filter: brightness(0.8);
+      @media (max-width: 800px) {
+        column-count: 1;
       }
     }
+
   }
 }
 </style>
